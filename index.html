@@ -275,7 +275,7 @@ nav::-webkit-scrollbar{display:none;}
   <button class="tab" onclick="showPage('history')">History</button>
   <button class="tab" onclick="showPage('progress')">Progress</button>
   <button class="tab" onclick="showPage('guide')">Guide</button>
-  <button class="tab" onclick="showPage('pace')">Pace Calc</button>
+  <button class="tab" onclick="showPage('pace')">Run Plan</button>
   <div class="nav-r">
     <button class="dark-btn" id="dark-btn" onclick="toggleDark()">🌙 Dark</button>
     <button class="log-btn" onclick="openModal()">+ Log Run</button>
@@ -368,7 +368,7 @@ nav::-webkit-scrollbar{display:none;}
       <div class="card-dark">
         <div class="card-ttl-lt">Today's Workout</div>
         <div class="today-row">
-          <div class="wo-icon" id="d-wo-icon">😴</div>
+          <div id="d-wo-icon" style="display:none"></div>
           <div>
             <div class="wo-type" id="d-wo-type">Rest</div>
             <div class="wo-desc" id="d-wo-desc">Recover well.</div>
@@ -588,60 +588,29 @@ nav::-webkit-scrollbar{display:none;}
     </div>
   </div>
 
-  <!-- PACE CALCULATOR -->
+  <!-- UPCOMING RUNS & PACES -->
   <div id="page-pace" class="page">
-    <div class="sec-hdr mb20">
+    <div class="sec-hdr mb16">
       <div>
-        <div class="sec-ttl">Pace Calculator</div>
-        <div class="sec-sub">Plan your race, nail your splits.</div>
+        <div class="sec-ttl">Upcoming Runs & Target Paces</div>
+        <div class="sec-sub">Every workout left in your plan with your exact pace targets.</div>
       </div>
     </div>
-    <div class="g2 mb16">
-      <div class="card">
-        <div class="card-ttl">Goal Time → Pace</div>
-        <div class="form-row mb12">
-          <div class="fg"><label>Goal Time (h:mm:ss)</label><input type="text" id="pc-time" placeholder="3:25:00" oninput="calcPaceFromTime()"></div>
-          <div class="fg"><label>Distance</label>
-            <select id="pc-dist" onchange="calcPaceFromTime()">
-              <option value="26.2">Marathon (26.2 mi)</option>
-              <option value="13.1">Half Marathon (13.1 mi)</option>
-              <option value="6.214">10K (6.2 mi)</option>
-              <option value="3.107">5K (3.1 mi)</option>
-            </select>
-          </div>
-        </div>
-        <div class="pc-result" id="pc-result-pace">—</div>
-        <div class="pc-lbl">per mile</div>
-        <div id="pc-splits-wrap"></div>
-      </div>
-      <div class="card">
-        <div class="card-ttl">Pace → Finish Time</div>
-        <div class="form-row mb12">
-          <div class="fg"><label>Pace (min:sec / mi)</label><input type="text" id="pf-pace" placeholder="7:50" oninput="calcTimeFromPace()"></div>
-          <div class="fg"><label>Distance</label>
-            <select id="pf-dist" onchange="calcTimeFromPace()">
-              <option value="26.2">Marathon (26.2 mi)</option>
-              <option value="13.1">Half Marathon</option>
-              <option value="6.214">10K</option>
-              <option value="3.107">5K</option>
-            </select>
-          </div>
-        </div>
-        <div class="pc-result" id="pf-result-time">—</div>
-        <div class="pc-lbl">finish time</div>
-        <div id="pf-splits-wrap"></div>
+    <div class="card mb16">
+      <div class="card-ttl">Target Paces — Shannon Reilly Marathon Plan 2026</div>
+      <div class="pace-row">
+        <div class="pace-item"><div class="pace-dot" style="background:var(--easy)"></div><div><div class="pace-lbl">Easy (Z1–2)</div><div class="pace-val">9:15–10:15/mi</div></div></div>
+        <div class="pace-item"><div class="pace-dot" style="background:var(--long)"></div><div><div class="pace-lbl">Long Run (Z2–3)</div><div class="pace-val">8:50–9:45/mi</div></div></div>
+        <div class="pace-item"><div class="pace-dot" style="background:var(--mp)"></div><div><div class="pace-lbl">Marathon Pace (Z4)</div><div class="pace-val">7:45–8:00/mi</div></div></div>
+        <div class="pace-item"><div class="pace-dot" style="background:var(--tempo)"></div><div><div class="pace-lbl">Tempo (Z5)</div><div class="pace-val">7:20–7:40/mi</div></div></div>
+        <div class="pace-item"><div class="pace-dot" style="background:var(--intv)"></div><div><div class="pace-lbl">Intervals (Z6)</div><div class="pace-val">6:50–7:10/mi</div></div></div>
       </div>
     </div>
-    <div class="card">
-      <div class="card-ttl">Your Goal Races — Quick Reference</div>
-      <table class="splits-tbl">
-        <thead><tr><th>Goal</th><th>Distance</th><th>Pace</th><th>Finish</th></tr></thead>
-        <tbody>
-          <tr><td><span class="goal-tag goal-a">A Goal</span></td><td>Marathon</td><td>7:50/mi</td><td>3:25:00</td></tr>
-          <tr><td><span class="goal-tag goal-b">B Goal (BQ)</span></td><td>Marathon</td><td>8:00/mi</td><td>3:29:21</td></tr>
-          <tr><td style="color:var(--muted)">Benchmark half</td><td>Half Marathon</td><td>8:23/mi</td><td>1:50:35</td></tr>
-        </tbody>
-      </table>
+    <div class="card" style="overflow:hidden">
+      <div class="card-ttl mb12">All Upcoming Workouts</div>
+      <div style="overflow-x:auto">
+        <div id="pace-plan-list"></div>
+      </div>
     </div>
   </div>
 
@@ -954,6 +923,7 @@ function showPage(id){
     if(t.getAttribute('onclick')&&t.getAttribute('onclick').includes("'"+id+"'"))t.classList.add('active');
   });
   if(id==='progress')renderCharts();
+  if(id==='pace')renderPacePlan();
 }
 
 // ── FILTER ────────────────────────────────────────────────────────────────────
@@ -1280,32 +1250,40 @@ function toggleDark(){
   localStorage.setItem('shannon_dark',on?'1':'0');
 }
 
-// ── PACE CALCULATOR ───────────────────────────────────────────────────────────
-function calcPaceFromTime(){
-  const secs=parseSecs(document.getElementById('pc-time').value.trim());
-  const dist=parseFloat(document.getElementById('pc-dist').value);
-  const el=document.getElementById('pc-result-pace');
-  const sw=document.getElementById('pc-splits-wrap');
-  if(!secs||!dist){el.textContent='—';sw.innerHTML='';return;}
-  const ps=secs/dist;
-  el.textContent=secsToPace(Math.round(ps),1);
-  renderSplits(sw,ps);
-}
-function calcTimeFromPace(){
-  const p=document.getElementById('pf-pace').value.trim().split(':').map(Number);
-  const dist=parseFloat(document.getElementById('pf-dist').value);
-  const el=document.getElementById('pf-result-time');
-  const sw=document.getElementById('pf-splits-wrap');
-  if(p.length<2||isNaN(p[0])||isNaN(p[1])){el.textContent='—';sw.innerHTML='';return;}
-  const ps=p[0]*60+p[1];
-  el.textContent=secsToStr(Math.round(ps*dist));
-  renderSplits(sw,ps);
-}
-function renderSplits(el,paceSec){
-  const pts=[{lbl:'5K',mi:3.107},{lbl:'10K',mi:6.214},{lbl:'15K',mi:9.321},{lbl:'Half',mi:13.1},{lbl:'20 mi',mi:20},{lbl:'Finish',mi:26.2}];
-  el.innerHTML=`<table class="splits-tbl" style="margin-top:12px">
-    <thead><tr><th>Split</th><th>Distance</th><th>Elapsed</th></tr></thead>
-    <tbody>${pts.map(c=>`<tr><td>${c.lbl}</td><td>${c.mi} mi</td><td>${secsToStr(Math.round(paceSec*c.mi))}</td></tr>`).join('')}</tbody>
+// ── RUN PLAN & PACES ──────────────────────────────────────────────────────────
+const PACE_TARGETS={
+  easy:'9:15–10:15/mi',long:'8:50–9:45/mi',mp:'7:45–8:00/mi',
+  tempo:'7:20–7:40/mi',interval:'6:50–7:10/mi',rest:'—'
+};
+function renderPacePlan(){
+  const el=document.getElementById('pace-plan-list');if(!el)return;
+  const today=new Date();today.setHours(0,0,0,0);
+  const rows=[];
+  const allPlan=[...PLAN.map((w,i)=>({w,wi:i,nyc:false})),...NYC_PLAN.map((w,i)=>({w,wi:18+i,nyc:true}))];
+  allPlan.forEach(({w,wi,nyc})=>{
+    w.days.forEach((day,di)=>{
+      if(day.t==='rest'||day.m===0)return;
+      const date=addDays(wkStart(wi),di);
+      if(date<today)return;
+      const mm=TM[day.t];
+      const bg=typeBgM[day.t]||'#f8f8f8';
+      const cl=typeClM[day.t]||'#666';
+      const dt=date.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+      const wlbl=nyc?`R${wi-17}`:`W${wi+1}`;
+      rows.push(`<tr>
+        <td style="font-weight:600;white-space:nowrap">${dt}</td>
+        <td style="color:var(--muted);font-size:11px;white-space:nowrap">${wlbl}</td>
+        <td><span class="type-pill" style="background:${bg};color:${cl}">${mm.lbl}</span></td>
+        <td style="font-weight:700;white-space:nowrap">${day.m} mi</td>
+        <td style="font-family:monospace;font-weight:600;color:${cl};white-space:nowrap">${PACE_TARGETS[day.t]||'—'}</td>
+        <td style="font-size:11px;color:var(--muted)">${day.d}</td>
+      </tr>`);
+    });
+  });
+  if(!rows.length){el.innerHTML='<div class="empty"><div class="ei">🏁</div><p>All workouts complete!</p></div>';return;}
+  el.innerHTML=`<table class="run-tbl">
+    <thead><tr><th>Date</th><th>Week</th><th>Type</th><th>Mi</th><th>Target Pace</th><th>Workout</th></tr></thead>
+    <tbody>${rows.join('')}</tbody>
   </table>`;
 }
 
