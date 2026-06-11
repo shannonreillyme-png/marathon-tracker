@@ -219,6 +219,51 @@ nav{background:var(--surface);border-bottom:1px solid var(--border);height:52px;
   .wo-block{grid-template-columns:repeat(4,1fr);}
   .fueling-row{grid-template-columns:1fr;}
 }
+
+/* NAV SCROLL (mobile) */
+nav{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+nav::-webkit-scrollbar{display:none;}
+
+/* DARK MODE */
+[data-dark]{color-scheme:dark;--bg:#181c14;--surface:#1f2419;--surface2:#272d1e;--border:#353d28;--text:#e6e2d8;--muted:#8a8274;--cream:#e6e2d8;--dark2:#1e2418;--dark3:#18202a;}
+[data-dark] .card{background:var(--surface);border-color:var(--border);}
+[data-dark] .card-dark{background:var(--dark2);}
+[data-dark] nav,[data-dark] .hist-bar{background:var(--surface);border-color:var(--border);}
+[data-dark] .tab{color:var(--muted);}[data-dark] .tab.active{color:var(--gl);}
+[data-dark] .modal-box{background:var(--surface);}
+[data-dark] .modal-x{background:var(--surface2);color:var(--muted);}
+[data-dark] .fg input,[data-dark] .fg select,[data-dark] .fg textarea{background:var(--surface2);border-color:var(--border);color:var(--text);}
+[data-dark] .plan-hdr{background:var(--surface);}[data-dark] .plan-hdr:hover{background:var(--surface2);}
+[data-dark] .plan-day{background:var(--surface);border-color:var(--border);}
+[data-dark] .plan-body{background:var(--bg);}[data-dark] .plan-item{border-color:var(--border);}
+[data-dark] .run-tbl th{background:var(--surface2);border-color:var(--border);}
+[data-dark] .run-tbl td{border-color:var(--border);}
+[data-dark] .run-tbl tr:hover td{background:rgba(255,255,255,.04);}
+[data-dark] .fchip{background:var(--surface);border-color:var(--border);color:var(--muted);}
+[data-dark] .fchip.active{background:var(--green);color:#fff;}
+[data-dark] .guide-tbl th{background:var(--surface2);}
+[data-dark] .guide-tbl td,[data-dark] .guide-tbl th{border-color:var(--border);}
+[data-dark] .fueling-left{background:var(--surface2);}
+[data-dark] .info-bar,[data-dark] .strava-tag,[data-dark] .strava-bdg{background:rgba(252,76,2,.12);border-color:rgba(252,76,2,.28);}
+[data-dark] .pace-bdg{background:var(--surface2);border-color:var(--border);}
+[data-dark] .stat-val-dk{color:var(--cream);}[data-dark] .stat-lbl-dk{color:var(--muted);}
+[data-dark] .day-chip{border-color:var(--border);}
+[data-dark] .splits-tbl td,[data-dark] .splits-tbl th{border-color:var(--border);}
+[data-dark] .fueling-row{border-color:var(--border);}
+
+/* DARK TOGGLE */
+.dark-btn{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 11px;font-size:12px;cursor:pointer;color:var(--text);white-space:nowrap;transition:border-color .15s;}
+.dark-btn:hover{border-color:var(--green);}
+
+/* PACE CALC */
+.pc-result{font-size:34px;font-weight:800;color:var(--green);margin:8px 0 2px;font-family:monospace;}
+.pc-lbl{font-size:11px;color:var(--muted);}
+.splits-tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;}
+.splits-tbl th{text-align:left;padding:8px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:2px solid var(--border);background:var(--surface);}
+.splits-tbl td{padding:8px 12px;border-bottom:1px solid var(--border);}
+.splits-tbl td:last-child{font-weight:700;font-family:monospace;}
+.splits-tbl tr:last-child td{border-bottom:none;}
+
 </style>
 </head>
 <body>
@@ -228,7 +273,11 @@ nav{background:var(--surface);border-bottom:1px solid var(--border);height:52px;
   <button class="tab active" onclick="showPage('dash')">Dashboard</button>
   <button class="tab" onclick="showPage('plan')">Training Plan</button>
   <button class="tab" onclick="showPage('history')">History</button>
+  <button class="tab" onclick="showPage('progress')">Progress</button>
+  <button class="tab" onclick="showPage('guide')">Guide</button>
+  <button class="tab" onclick="showPage('pace')">Pace Calc</button>
   <div class="nav-r">
+    <button class="dark-btn" id="dark-btn" onclick="toggleDark()">🌙 Dark</button>
     <button class="log-btn" onclick="openModal()">+ Log Run</button>
     <div class="strava-tag" id="nav-strava">⚡ Loading…</div>
   </div>
@@ -538,6 +587,64 @@ nav{background:var(--surface);border-bottom:1px solid var(--border);height:52px;
       </div>
     </div>
   </div>
+
+  <!-- PACE CALCULATOR -->
+  <div id="page-pace" class="page">
+    <div class="sec-hdr mb20">
+      <div>
+        <div class="sec-ttl">Pace Calculator</div>
+        <div class="sec-sub">Plan your race, nail your splits.</div>
+      </div>
+    </div>
+    <div class="g2 mb16">
+      <div class="card">
+        <div class="card-ttl">Goal Time → Pace</div>
+        <div class="form-row mb12">
+          <div class="fg"><label>Goal Time (h:mm:ss)</label><input type="text" id="pc-time" placeholder="3:25:00" oninput="calcPaceFromTime()"></div>
+          <div class="fg"><label>Distance</label>
+            <select id="pc-dist" onchange="calcPaceFromTime()">
+              <option value="26.2">Marathon (26.2 mi)</option>
+              <option value="13.1">Half Marathon (13.1 mi)</option>
+              <option value="6.214">10K (6.2 mi)</option>
+              <option value="3.107">5K (3.1 mi)</option>
+            </select>
+          </div>
+        </div>
+        <div class="pc-result" id="pc-result-pace">—</div>
+        <div class="pc-lbl">per mile</div>
+        <div id="pc-splits-wrap"></div>
+      </div>
+      <div class="card">
+        <div class="card-ttl">Pace → Finish Time</div>
+        <div class="form-row mb12">
+          <div class="fg"><label>Pace (min:sec / mi)</label><input type="text" id="pf-pace" placeholder="7:50" oninput="calcTimeFromPace()"></div>
+          <div class="fg"><label>Distance</label>
+            <select id="pf-dist" onchange="calcTimeFromPace()">
+              <option value="26.2">Marathon (26.2 mi)</option>
+              <option value="13.1">Half Marathon</option>
+              <option value="6.214">10K</option>
+              <option value="3.107">5K</option>
+            </select>
+          </div>
+        </div>
+        <div class="pc-result" id="pf-result-time">—</div>
+        <div class="pc-lbl">finish time</div>
+        <div id="pf-splits-wrap"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-ttl">Your Goal Races — Quick Reference</div>
+      <table class="splits-tbl">
+        <thead><tr><th>Goal</th><th>Distance</th><th>Pace</th><th>Finish</th></tr></thead>
+        <tbody>
+          <tr><td><span class="goal-tag goal-a">A Goal</span></td><td>Marathon</td><td>7:50/mi</td><td>3:25:00</td></tr>
+          <tr><td><span class="goal-tag goal-b">B Goal (BQ)</span></td><td>Marathon</td><td>8:00/mi</td><td>3:29:21</td></tr>
+          <tr><td style="color:var(--muted)">Benchmark half</td><td>Half Marathon</td><td>8:23/mi</td><td>1:50:35</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
 
 </div>
 
@@ -1098,46 +1205,111 @@ function rawToRun([id,sl,dist,secs,name,prs,elev]){
     distance:mi,time:secsToStr(secs),notes:notes.join(' · '),name,strava:true};
 }
 
-// ── LIVE SYNC (best-effort, non-blocking) ────────────────────────────────────
-async function waitForCowork(ms=5000){
-  const end=Date.now()+ms;
-  while(!window.cowork){
-    if(Date.now()>end)throw new Error('no cowork');
-    await new Promise(r=>setTimeout(r,150));
-  }
-}
+// ── LIVE SYNC (Strava OAuth) ──────────────────────────────────────────────────
 async function syncStrava(){
-  try{
-    await waitForCowork();
-    const r=await window.cowork.callMcpTool(
-      'mcp__ec03c970-69fb-4dbe-a071-234ece1c307a__list_activities',
-      {range_start:'2026-03-01T00:00:00',first:100,ordering:'StartDateLocalDesc'}
-    );
-    if(r.isError)throw new Error('api error');
-    const data=r.structuredContent??JSON.parse(r.content[0].text);
-    const runs=(data.activities||[]).filter(a=>a.sport_type==='Run');
-    if(data.has_next_page&&data.end_cursor){
-      const r2=await window.cowork.callMcpTool(
-        'mcp__ec03c970-69fb-4dbe-a071-234ece1c307a__list_activities',
-        {range_start:'2026-03-01T00:00:00',first:100,ordering:'StartDateLocalDesc',after:data.end_cursor}
-      );
-      if(!r2.isError){
-        const d2=r2.structuredContent??JSON.parse(r2.content[0].text);
-        runs.push(...(d2.activities||[]).filter(a=>a.sport_type==='Run'));
+  const navTag=document.getElementById('nav-strava');
+  const accessToken=localStorage.getItem('strava_access_token');
+  const refreshToken=localStorage.getItem('strava_refresh_token');
+  const expiresAt=parseInt(localStorage.getItem('strava_expires_at')||'0');
+
+  if(!accessToken||!refreshToken){
+    navTag.innerHTML='<a href="/.netlify/functions/strava-auth" style="color:inherit;text-decoration:none;font-weight:700">⚡ Connect Strava</a>';
+    return;
+  }
+
+  let token=accessToken;
+  if(Math.floor(Date.now()/1000)>expiresAt-300){
+    try{
+      const r=await fetch(`/.netlify/functions/strava-refresh?refresh_token=${refreshToken}`);
+      const d=await r.json();
+      if(d.access_token){
+        token=d.access_token;
+        localStorage.setItem('strava_access_token',d.access_token);
+        localStorage.setItem('strava_refresh_token',d.refresh_token);
+        localStorage.setItem('strava_expires_at',String(d.expires_at));
       }
+    }catch(e){}
+  }
+
+  try{
+    navTag.textContent='⚡ Syncing…';
+    const after=Math.floor(new Date('2026-03-01').getTime()/1000);
+    let all=[],page=1;
+    while(true){
+      const r=await fetch(`https://www.strava.com/api/v3/athlete/activities?after=${after}&per_page=100&page=${page}`,
+        {headers:{Authorization:`Bearer ${token}`}});
+      const acts=await r.json();
+      if(!Array.isArray(acts)||acts.length===0)break;
+      all.push(...acts.filter(a=>a.type==='Run'||a.sport_type==='Run'));
+      if(acts.length<100)break;
+      page++;
     }
-    stravaRuns=runs.map(stravaToRun);
-    document.getElementById('nav-strava').textContent=`⚡ ${stravaRuns.length} runs (live)`;
+    stravaRuns=all.map(a=>{
+      const mi=parseFloat((a.distance/1609.344).toFixed(2));
+      const notes=['⚡ Strava'];
+      if(a.pr_count>0)notes.push(`${a.pr_count} PR${a.pr_count>1?'s':''}`);
+      if(a.total_elevation_gain>40)notes.push(`${Math.round(a.total_elevation_gain)}m elev`);
+      return{id:a.id,date:a.start_date_local.split('T')[0],
+        type:mi>=9?'long':'easy',distance:mi,time:secsToStr(a.moving_time),
+        notes:notes.join(' · '),name:a.name,strava:true};
+    });
+    navTag.innerHTML=`⚡ ${stravaRuns.length} runs (live) <span onclick="disconnectStrava()" style="cursor:pointer;opacity:.5;font-size:10px;margin-left:4px" title="Disconnect">✕</span>`;
     renderDash();renderLog();
   }catch(e){
-    document.getElementById('nav-strava').textContent=`⚡ ${stravaRuns.length} runs`;
+    navTag.textContent=`⚡ ${stravaRuns.length} runs (cached)`;
   }
+}
+
+function disconnectStrava(){
+  localStorage.removeItem('strava_access_token');
+  localStorage.removeItem('strava_refresh_token');
+  localStorage.removeItem('strava_expires_at');
+  stravaRuns=STRAVA_RAW.map(rawToRun);
+  document.getElementById('nav-strava').innerHTML='<a href="/.netlify/functions/strava-auth" style="color:inherit;text-decoration:none;font-weight:700">⚡ Connect Strava</a>';
+  renderDash();renderLog();
+}
+
+// ── DARK MODE ─────────────────────────────────────────────────────────────────
+function toggleDark(){
+  const on=document.documentElement.toggleAttribute('data-dark');
+  document.getElementById('dark-btn').textContent=on?'☀️ Light':'🌙 Dark';
+  localStorage.setItem('shannon_dark',on?'1':'0');
+}
+
+// ── PACE CALCULATOR ───────────────────────────────────────────────────────────
+function calcPaceFromTime(){
+  const secs=parseSecs(document.getElementById('pc-time').value.trim());
+  const dist=parseFloat(document.getElementById('pc-dist').value);
+  const el=document.getElementById('pc-result-pace');
+  const sw=document.getElementById('pc-splits-wrap');
+  if(!secs||!dist){el.textContent='—';sw.innerHTML='';return;}
+  const ps=secs/dist;
+  el.textContent=secsToPace(Math.round(ps),1);
+  renderSplits(sw,ps);
+}
+function calcTimeFromPace(){
+  const p=document.getElementById('pf-pace').value.trim().split(':').map(Number);
+  const dist=parseFloat(document.getElementById('pf-dist').value);
+  const el=document.getElementById('pf-result-time');
+  const sw=document.getElementById('pf-splits-wrap');
+  if(p.length<2||isNaN(p[0])||isNaN(p[1])){el.textContent='—';sw.innerHTML='';return;}
+  const ps=p[0]*60+p[1];
+  el.textContent=secsToStr(Math.round(ps*dist));
+  renderSplits(sw,ps);
+}
+function renderSplits(el,paceSec){
+  const pts=[{lbl:'5K',mi:3.107},{lbl:'10K',mi:6.214},{lbl:'15K',mi:9.321},{lbl:'Half',mi:13.1},{lbl:'20 mi',mi:20},{lbl:'Finish',mi:26.2}];
+  el.innerHTML=`<table class="splits-tbl" style="margin-top:12px">
+    <thead><tr><th>Split</th><th>Distance</th><th>Elapsed</th></tr></thead>
+    <tbody>${pts.map(c=>`<tr><td>${c.lbl}</td><td>${c.mi} mi</td><td>${secsToStr(Math.round(paceSec*c.mi))}</td></tr>`).join('')}</tbody>
+  </table>`;
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 stravaRuns=STRAVA_RAW.map(rawToRun);
 document.getElementById('loading').style.display='none';
 document.getElementById('app').style.display='block';
+if(localStorage.getItem('shannon_dark')==='1'){document.documentElement.setAttribute('data-dark','');document.getElementById('dark-btn').textContent='☀️ Light';}
 renderDash();renderPlan();renderLog();initForm();
 syncStrava();
 </script>
