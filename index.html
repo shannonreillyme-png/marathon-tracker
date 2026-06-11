@@ -108,6 +108,15 @@ nav{background:var(--surface);border-bottom:1px solid var(--border);height:52px;
 .pace-lbl{font-size:11px;color:var(--muted);}
 .pace-val{font-size:12px;font-weight:700;font-family:monospace;}
 
+/* PACE CARDS */
+.pace-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px;}
+.pace-card{border-radius:12px;padding:16px 14px;border-top:3px solid transparent;background:var(--surface);}
+.pace-card-zone{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px;}
+.pace-card-type{font-size:13px;font-weight:800;margin-bottom:8px;color:var(--text);}
+.pace-card-val{font-size:20px;font-weight:800;font-family:monospace;line-height:1.1;margin-bottom:2px;}
+.pace-card-unit{font-size:10px;color:var(--muted);font-weight:600;}
+@media(max-width:640px){.pace-grid{grid-template-columns:repeat(2,1fr);}}
+
 /* PLAN */
 .plan-item{border:1px solid var(--border);border-radius:10px;margin-bottom:7px;overflow:hidden;}
 .plan-hdr{display:grid;grid-template-columns:60px 1fr auto 18px;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;background:var(--surface);transition:background .12s;position:relative;overflow:hidden;}
@@ -383,15 +392,45 @@ nav::-webkit-scrollbar{display:none;}
     </div>
 
     <div class="card">
-      <div class="card-ttl">Target Paces — Shannon Reilly Marathon Plan 2026</div>
-      <div class="pace-row">
-        <div class="pace-item"><div class="pace-dot" style="background:var(--easy)"></div><div><div class="pace-lbl">Easy (Z1–2)</div><div class="pace-val">9:15–10:15/mi</div></div></div>
-        <div class="pace-item"><div class="pace-dot" style="background:var(--long)"></div><div><div class="pace-lbl">Long Run (Z2–3)</div><div class="pace-val">8:50–9:45/mi</div></div></div>
-        <div class="pace-item"><div class="pace-dot" style="background:var(--mp)"></div><div><div class="pace-lbl">Marathon Pace (Z4)</div><div class="pace-val">7:45–8:00/mi</div></div></div>
-        <div class="pace-item"><div class="pace-dot" style="background:var(--tempo)"></div><div><div class="pace-lbl">Tempo (Z5)</div><div class="pace-val">7:20–7:40/mi</div></div></div>
-        <div class="pace-item"><div class="pace-dot" style="background:var(--intv)"></div><div><div class="pace-lbl">Intervals (Z6)</div><div class="pace-val">6:50–7:10/mi</div></div></div>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:6px">
+        <div>
+          <div style="font-size:16px;font-weight:800;letter-spacing:-.2px">Target Paces</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;font-style:italic;font-family:Georgia,serif">Shannon Reilly · Chicago & NYC 2026</div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);text-align:right">Benchmark: Jun 7 · 13.18mi @ 8:23/mi · Sub-3:25 realistic</div>
       </div>
-      <div class="mt8" style="font-size:10px;color:var(--muted)">Benchmark: Jun 7 — Shamax Gorges half 13.18mi @ 8:23/mi (1:51, controlled effort) · Sub-3:25 is realistic</div>
+      <div class="pace-grid">
+        <div class="pace-card" style="border-top-color:var(--easy)">
+          <div class="pace-card-zone">Zone 1–2</div>
+          <div class="pace-card-type" style="color:var(--easy)">Easy Run</div>
+          <div class="pace-card-val" style="color:var(--easy)">9:15–10:15</div>
+          <div class="pace-card-unit">min / mile</div>
+        </div>
+        <div class="pace-card" style="border-top-color:var(--long)">
+          <div class="pace-card-zone">Zone 2–3</div>
+          <div class="pace-card-type" style="color:var(--long)">Long Run</div>
+          <div class="pace-card-val" style="color:var(--long)">8:50–9:45</div>
+          <div class="pace-card-unit">min / mile</div>
+        </div>
+        <div class="pace-card" style="border-top-color:var(--mp)">
+          <div class="pace-card-zone">Zone 4</div>
+          <div class="pace-card-type" style="color:var(--mp)">Marathon Pace</div>
+          <div class="pace-card-val" style="color:var(--mp)">7:45–8:00</div>
+          <div class="pace-card-unit">min / mile</div>
+        </div>
+        <div class="pace-card" style="border-top-color:var(--tempo)">
+          <div class="pace-card-zone">Zone 5</div>
+          <div class="pace-card-type" style="color:var(--tempo)">Tempo</div>
+          <div class="pace-card-val" style="color:var(--tempo)">7:20–7:40</div>
+          <div class="pace-card-unit">min / mile</div>
+        </div>
+        <div class="pace-card" style="border-top-color:var(--intv)">
+          <div class="pace-card-zone">Zone 6</div>
+          <div class="pace-card-type" style="color:var(--intv)">Intervals</div>
+          <div class="pace-card-val" style="color:var(--intv)">6:50–7:10</div>
+          <div class="pace-card-unit">min / mile</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -598,13 +637,39 @@ nav::-webkit-scrollbar{display:none;}
       </div>
     </div>
     <div class="card mb16">
-      <div class="card-ttl">Target Paces — Shannon Reilly Marathon Plan 2026</div>
-      <div class="pace-row">
-        <div class="pace-item"><div class="pace-dot" style="background:var(--easy)"></div><div><div class="pace-lbl">Easy (Z1–2)</div><div class="pace-val">9:15–10:15/mi</div></div></div>
-        <div class="pace-item"><div class="pace-dot" style="background:var(--long)"></div><div><div class="pace-lbl">Long Run (Z2–3)</div><div class="pace-val">8:50–9:45/mi</div></div></div>
-        <div class="pace-item"><div class="pace-dot" style="background:var(--mp)"></div><div><div class="pace-lbl">Marathon Pace (Z4)</div><div class="pace-val">7:45–8:00/mi</div></div></div>
-        <div class="pace-item"><div class="pace-dot" style="background:var(--tempo)"></div><div><div class="pace-lbl">Tempo (Z5)</div><div class="pace-val">7:20–7:40/mi</div></div></div>
-        <div class="pace-item"><div class="pace-dot" style="background:var(--intv)"></div><div><div class="pace-lbl">Intervals (Z6)</div><div class="pace-val">6:50–7:10/mi</div></div></div>
+      <div style="font-size:16px;font-weight:800;letter-spacing:-.2px;margin-bottom:2px">Target Paces</div>
+      <div style="font-size:11px;color:var(--muted);font-style:italic;font-family:Georgia,serif">Shannon Reilly · Chicago & NYC 2026</div>
+      <div class="pace-grid">
+        <div class="pace-card" style="border-top-color:var(--easy)">
+          <div class="pace-card-zone">Zone 1–2</div>
+          <div class="pace-card-type" style="color:var(--easy)">Easy Run</div>
+          <div class="pace-card-val" style="color:var(--easy)">9:15–10:15</div>
+          <div class="pace-card-unit">min / mile</div>
+        </div>
+        <div class="pace-card" style="border-top-color:var(--long)">
+          <div class="pace-card-zone">Zone 2–3</div>
+          <div class="pace-card-type" style="color:var(--long)">Long Run</div>
+          <div class="pace-card-val" style="color:var(--long)">8:50–9:45</div>
+          <div class="pace-card-unit">min / mile</div>
+        </div>
+        <div class="pace-card" style="border-top-color:var(--mp)">
+          <div class="pace-card-zone">Zone 4</div>
+          <div class="pace-card-type" style="color:var(--mp)">Marathon Pace</div>
+          <div class="pace-card-val" style="color:var(--mp)">7:45–8:00</div>
+          <div class="pace-card-unit">min / mile</div>
+        </div>
+        <div class="pace-card" style="border-top-color:var(--tempo)">
+          <div class="pace-card-zone">Zone 5</div>
+          <div class="pace-card-type" style="color:var(--tempo)">Tempo</div>
+          <div class="pace-card-val" style="color:var(--tempo)">7:20–7:40</div>
+          <div class="pace-card-unit">min / mile</div>
+        </div>
+        <div class="pace-card" style="border-top-color:var(--intv)">
+          <div class="pace-card-zone">Zone 6</div>
+          <div class="pace-card-type" style="color:var(--intv)">Intervals</div>
+          <div class="pace-card-val" style="color:var(--intv)">6:50–7:10</div>
+          <div class="pace-card-unit">min / mile</div>
+        </div>
       </div>
     </div>
     <div class="card" style="overflow:hidden">
