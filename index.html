@@ -1213,14 +1213,14 @@ async function syncStrava(){
   const expiresAt=parseInt(localStorage.getItem('strava_expires_at')||'0');
 
   if(!accessToken||!refreshToken){
-    navTag.innerHTML='<a href="/.netlify/functions/strava-auth" style="color:inherit;text-decoration:none;font-weight:700">⚡ Connect Strava</a>';
+    navTag.innerHTML='<a href="/api/strava-auth" style="color:inherit;text-decoration:none;font-weight:700">⚡ Connect Strava</a>';
     return;
   }
 
   let token=accessToken;
   if(Math.floor(Date.now()/1000)>expiresAt-300){
     try{
-      const r=await fetch(`/.netlify/functions/strava-refresh?refresh_token=${refreshToken}`);
+      const r=await fetch(`/api/strava-refresh?refresh_token=${refreshToken}`);
       const d=await r.json();
       if(d.access_token){
         token=d.access_token;
@@ -1265,7 +1265,7 @@ function disconnectStrava(){
   localStorage.removeItem('strava_refresh_token');
   localStorage.removeItem('strava_expires_at');
   stravaRuns=STRAVA_RAW.map(rawToRun);
-  document.getElementById('nav-strava').innerHTML='<a href="/.netlify/functions/strava-auth" style="color:inherit;text-decoration:none;font-weight:700">⚡ Connect Strava</a>';
+  document.getElementById('nav-strava').innerHTML='<a href="/api/strava-auth" style="color:inherit;text-decoration:none;font-weight:700">⚡ Connect Strava</a>';
   renderDash();renderLog();
 }
 
