@@ -340,13 +340,13 @@ nav::-webkit-scrollbar{display:none;}
       <div class="card-dark">
         <div class="card-ttl-lt">Chicago Marathon</div>
         <div class="stat-big" id="d-chi">--</div>
-        <div class="stat-sm">days away</div>
+        <div class="stat-sm">days away · <span id="d-chi-wk">--</span> weeks</div>
         <div class="stat-dt">October 11, 2026</div>
       </div>
       <div class="card-dark" style="background:var(--dark3)">
         <div class="card-ttl-lt">NYC Marathon</div>
         <div class="stat-big grn" id="d-nyc">--</div>
-        <div class="stat-sm">days away</div>
+        <div class="stat-sm">days away · <span id="d-nyc-wk">--</span> weeks</div>
         <div class="stat-dt">November 1, 2026</div>
       </div>
       <div class="card ring-card">
@@ -966,8 +966,11 @@ function filterRuns(type,btn){
 
 // ── DASHBOARD ─────────────────────────────────────────────────────────────────
 function renderDash(){
-  document.getElementById('d-chi').textContent=daysUntil(CHICAGO_DATE);
-  document.getElementById('d-nyc').textContent=daysUntil(NYC_DATE);
+  const chiDays=daysUntil(CHICAGO_DATE),nycDays=daysUntil(NYC_DATE);
+  document.getElementById('d-chi').textContent=chiDays;
+  document.getElementById('d-chi-wk').textContent=Math.ceil(chiDays/7);
+  document.getElementById('d-nyc').textContent=nycDays;
+  document.getElementById('d-nyc-wk').textContent=Math.ceil(nycDays/7);
   const wi=curWeek(),week=PLAN[wi],di=todayDI();
   document.getElementById('d-wk-serif').textContent=`week ${wi+1} of 18`;
   document.getElementById('d-wk-title').textContent=week.lbl;
