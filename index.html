@@ -359,7 +359,7 @@ nav::-webkit-scrollbar{display:none;}
         <div class="ring-info">
           <div class="card-ttl">This Week</div>
           <div class="stat-val-dk" id="d-wk-mi">--</div>
-          <div class="stat-lbl-dk">mi target</div>
+          <div class="stat-lbl-dk" id="d-wk-lbl">mi target</div>
         </div>
       </div>
     </div>
@@ -971,7 +971,11 @@ function renderDash(){
   const wi=curWeek(),week=PLAN[wi],di=todayDI();
   document.getElementById('d-wk-serif').textContent=`week ${wi+1} of 18`;
   document.getElementById('d-wk-title').textContent=week.lbl;
-  document.getElementById('d-wk-mi').textContent=week.mi;
+  const cr=cycleRuns(),ws=wkStart(wi),we=wkEnd(wi);
+  const wkMi=cr.filter(r=>{const rd=new Date(r.date+'T00:00:00');return rd>=ws&&rd<=we;})
+               .reduce((s,r)=>s+(parseFloat(r.distance)||0),0);
+  document.getElementById('d-wk-mi').textContent=`${wkMi.toFixed(1)} / ${week.mi}`;
+  document.getElementById('d-wk-lbl').textContent='mi completed';
 
   const td=week.days[di],mm=TM[td.t];
   const woI=document.getElementById('d-wo-icon');
@@ -987,9 +991,6 @@ function renderDash(){
     strip.appendChild(chip);
   });
 
-  const cr=cycleRuns(),ws=wkStart(wi),we=wkEnd(wi);
-  const wkMi=cr.filter(r=>{const rd=new Date(r.date+'T00:00:00');return rd>=ws&&rd<=we;})
-               .reduce((s,r)=>s+(parseFloat(r.distance)||0),0);
   const pct=Math.min(wkMi/week.mi,1);
   document.getElementById('ring-fill').style.strokeDashoffset=251.3*(1-pct);
 }
