@@ -431,6 +431,14 @@ nav::-webkit-scrollbar{display:none;}
         </div>
       </div>
     </div>
+
+    <div class="card mt12">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="font-size:13px;font-weight:800">This Week's Runs</div>
+        <button onclick="showPage('history')" style="background:none;border:none;font-size:11px;color:var(--green);font-weight:700;cursor:pointer;padding:0">View all →</button>
+      </div>
+      <div id="d-week-history"></div>
+    </div>
   </div>
 
   <!-- TRAINING PLAN -->
@@ -1031,6 +1039,28 @@ function renderDash(){
 
   const pct=Math.min(wkMi/week.mi,1);
   document.getElementById('ring-fill').style.strokeDashoffset=251.3*(1-pct);
+
+  // This week's runs
+  const wkRuns=cr.filter(r=>{const rd=new Date(r.date+'T00:00:00');return rd>=ws&&rd<=we&&r.type!=='rest';});
+  const el=document.getElementById('d-week-history');
+  if(!wkRuns.length){
+    el.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">No runs logged this week yet.</div>';
+  }else{
+    const rows=wkRuns.map(r=>{
+      const mm=TM[r.type]||TM.easy;
+      const secs=parseSecs(r.time);
+      const pace=r.distance>0&&secs?secsToPace(secs,r.distance):'—';
+      const dt=new Date(r.date+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+      return`<tr>
+        <td style="font-weight:600;white-space:nowrap;font-size:12px">${dt}</td>
+        <td><span class="type-pill" style="background:${typeBgM[r.type]||'#f8f8f8'};color:${typeClM[r.type]||'#666'};font-size:10px">${mm.lbl}</span></td>
+        <td style="font-weight:700">${r.distance||'—'} mi</td>
+        <td style="font-family:monospace;font-size:12px"><span class="pace-bdg">${pace}</span></td>
+        <td style="font-size:11px;color:var(--muted);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.name||r.notes||''}</td>
+      </tr>`;
+    }).join('');
+    el.innerHTML=`<table class="run-tbl"><thead><tr><th>Date</th><th>Type</th><th>Miles</th><th>Pace</th><th>Notes</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
 }
 
 // ── PLAN ──────────────────────────────────────────────────────────────────────
